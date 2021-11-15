@@ -114,6 +114,7 @@ app.post('/api/addCompetition', async (req, res) =>
 
 
 
+
 // ENDPOINT: Login
 app.post('/api/login', async (req, res, next) => 
 {
