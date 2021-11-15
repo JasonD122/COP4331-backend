@@ -1,16 +1,18 @@
 # Objects
+```
 class Machine {
-	name: "MachineName",
-	services: [
-		Service
-	]
+  name: "MachineName",
+  services: [
+    Service
+  ]
 }
 
 class Service
 {
-	name: "ServiceName",
-	port: 420
+  name: "ServiceName",
+  port: 420
 }
+```
 
 # Endpoints
 - /register
@@ -32,32 +34,32 @@ class Service
 ## /register
 ```
 {
-	email: ""
-	password: "",
+  email: ""
+  password: "",
 }
 ```
 
 ### Response
 ```
 {
-	sessionId: "",
-	error: ""
+  sessionId: "",
+  error: ""
 }
 ```
 
 ## /verifyEmail
 ```
 {
-	sessionId: "",	
-	verifyCode: ""
+  sessionId: "",  
+  verifyCode: ""
 }
 ```
 
 ### Response
 ```
 {
-	sessionId: "",
-	error: ""
+  sessionId: "",
+  error: ""
 }
 ```
 
@@ -65,22 +67,22 @@ class Service
 ## /addCompetition 
 ```
 {
-	sessionId: "",
-	name: "Team Name",
-	maxTeams: 69,
-	startTime: "yyyy-mm-ddThh:mm:ss",
-	endTime: "yyyy-mm-ddThh:mm:ss",
-	machines: [
-		{
-			name: "MachineName",
-			services: [
-				{
-					name: "ServiceName",
-					port: 420
-				},...
-			]
-		},...
-	]
+  sessionId: "",
+  name: "Team Name",
+  maxTeams: 69,
+  startTime: "yyyy-mm-ddThh:mm:ss",
+  endTime: "yyyy-mm-ddThh:mm:ss",
+  machines: [
+    {
+      name: "MachineName",
+      services: [
+        {
+          name: "ServiceName",
+          port: 420
+        },...
+      ]
+    },...
+  ]
 
 }
 ```
@@ -88,8 +90,8 @@ class Service
 ### Response
 ```
 {
-	joinCode: "8digitstring",
-	error: ""
+  joinCode: "8digitstring",
+  error: ""
 }
 ```
 
@@ -97,18 +99,18 @@ class Service
 ## /addTeam
 ```
 {
-	name: "",
-	email: "",
-	password: "",
-	joinCode: "x7suIop6"
+  name: "",
+  email: "",
+  password: "",
+  joinCode: "x7suIop6"
 }
 ```
 
 ### Response
 ```
 {
-	sessionId: "",
-	error: ""
+  sessionId: "",
+  error: ""
 }
 ```
 
@@ -116,15 +118,15 @@ class Service
 ## /login
 ```
 {
-	email: "",
-	password: ""
+  email: "",
+  password: ""
 }
 ```
 
 ### Response
 ```
 {
-	error: ""
+  error: ""
 }
 ```
 
@@ -132,14 +134,14 @@ class Service
 ## /logout
 ```
 {
-	sessionId: ""
+  sessionId: ""
 }
 ```
 
 ### Response
 ```
 {
-	error: ""
+  error: ""
 }
 ```
 
@@ -147,14 +149,14 @@ class Service
 ## /forgotPassword
 ```
 {
-	email: ""
+  email: ""
 }
 ```
 
 ### Response
 ```
 {
-	error: ""
+  error: ""
 }
 ```
 
@@ -162,15 +164,15 @@ class Service
 ## /changePassword
 ```
 {
-	code: "",
-	password: ""
+  code: "",
+  password: ""
 }
 ```
 
 ### Response
 ```
 {
-	error: ""	
+  error: "" 
 }
 ```
 
@@ -178,17 +180,17 @@ class Service
 ## /getRequiredMachines
 ```
 {
-	joinCode: ""
+  joinCode: ""
 }
 ```
 
 ### Response
 ```
 {
-	machines: [
-		Machine
-	],
-	error: ""
+  machines: [
+    Machine
+  ],
+  error: ""
 }
 ```
 
@@ -196,17 +198,17 @@ class Service
 ## /addMachines
 ```
 {
-	sessionId: "",
-	machines: [
-		Machine
-	]
+  sessionId: "",
+  machines: [
+    Machine
+  ]
 }
 ```
 
 ### Response
 ```
 {
-	error: ""
+  error: ""
 }
 ```
 
@@ -214,30 +216,30 @@ class Service
 ## /statusHistory
 ```
 {
-	serviceId: "",
+  serviceId: "",
 }
 ```
 
 ### Response
 ```
 {
-	error: "",
-	machines: [
-		{
-			name: "MachineName",
-			services: [
-				{
-					name: "ServiceName",
-					upCount: 6,
-					downCount: 9,
-					history: {
-						time: DateTime,
-						status: true/false
-					}
-				}
-			]
-		}
-	]
+  error: "",
+  machines: [
+    {
+      name: "MachineName",
+      services: [
+        {
+          name: "ServiceName",
+          upCount: 6,
+          downCount: 9,
+          history: {
+            time: DateTime,
+            status: true/false
+          }
+        }
+      ]
+    }
+  ]
 }
 ```
 
@@ -246,14 +248,14 @@ class Service
 ## /deleteCompetition
 ```
 {
-	sessionId: "",
-	name: ""
+  sessionId: "",
+  name: ""
 }
 ```
 
 ### Response
 ```
 {
-	error: ""
+  error: ""
 }
 ```
