@@ -126,6 +126,7 @@ class Service
 ### Response
 ```
 {
+  sid: "",
   error: ""
 }
 ```
