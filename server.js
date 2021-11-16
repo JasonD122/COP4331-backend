@@ -11,6 +11,8 @@ app.set(PORT);
 app.use(cors());
 app.use(bodyParser.json());
 const MongoClient = require('mongodb').MongoClient;
+const { join } = require('path');
+const { mkdir } = require('fs');
 const url = 'mongodb+srv://jason2992:WeLoveCOP4331@cop4331.njgcb.mongodb.net/COP4331?retryWrites=true&w=majority';
 //const url = 'mongodb+srv://cop4331.njgcb.mongodb.net/COP4331" --username jason2992 --password WeLoveCOP4331';
 const client = new MongoClient(url);
@@ -59,7 +61,7 @@ if (process.env.NODE_ENV === 'production')
    - addCompetition
 	 - login 
 	 - addTeam
-	 - addReq_Services
+	 - addMachine
 	 - addInstances
 
  * ************
@@ -88,14 +90,22 @@ app.use((req, res, next) =>
 // ENDPOINT: Add Competition
 app.post('/api/addCompetition', async (req, res) =>
 {
-  // incoming: Competition, Teams array,  requied services
-  // outgoing: error
+  // incoming: SessionID, CompName, Team Array, machine_services
+  // outgoing: error , joinCode
 	
-  //const { team, req_services, start_time,end_time} = req.body;
+  const { team, machine, start_time,end_time} = req.body;
 
-  const newCompetition = {teams:[],req_services:[], start_time:"", end_time:"", join_code:""};
+  var joinCode = makeid(8);
+
+  const newCompetition = {
+    team,
+    machine, 
+    start_time,
+    end_time, 
+    joinCode
+  };
   
-  var error = '';
+  let error = '';
   
 
   try
@@ -108,9 +118,55 @@ app.post('/api/addCompetition', async (req, res) =>
     res.status(500).json({message : e.toString()})
   }
 
-  var ret = { error: error };
+  let ret = { error: error, joinCode:joinCode };
   res.status(200).json(ret);
 });
+
+
+// ENDPOINT: Add Competition
+app.post('/api/deleteCompetition', async (req, res) =>
+{
+  // incoming: SessionID or Competition _id
+  // outgoing: error , joinCode
+	
+  const { sid } = req.body;
+
+  //should return user object
+  const user = sm.authorize(sid);
+  
+  let error="";
+
+  
+  try
+  {
+    
+    // we use user object to find competition to delete
+    comp = await db.collection('Competition').find({ _id : user.inst});
+  
+    //for each team we find Users
+    comp.teams.forEach(element => {
+        
+     const result = await db.collection('Teams').find({_id: element} );
+  
+     const result1 = await db.collection('Users').deleteOne({ _id : result.user});
+  
+     const result2 = await db.collection('Teams').deleteOne({ _id : element});
+      
+    });
+
+    const del = await db.collection('Competition').deleteOne(comp);
+
+  }
+  catch(e)
+  {
+    res.status(500).json({message : e.toString()})
+  }
+
+  let ret = { error: error, joinCode:joinCode };
+  res.status(200).json(ret);
+});
+
+
 
 
 
@@ -151,26 +207,104 @@ app.post('/api/login', async (req, res, next) =>
 //my idea here is that we are going to pass an array with all the teams with their information filled out.
 app.post('/api/addTeam', async (req, res) => 
 {
-  // incoming: team,
+  // incoming: teamname, email, password, joinCode
   // outgoing: results[], error
 
   try{
-    var error = '';
+    let error = '';
+    let verifiyCode = makeid(6);
 
-    const { teamObject, compID } = req.body;
+    const { teamName, email, password ,joinCode, name } = req.body;
 
     const db = client.db();
 
-    const query = {};
+    try{
+    const check = db.collection('Competition').find({joinCode : joinCode});
+
+    }
+
+    catch(err){
+
+      var ret = { error:err.message};
+      res.status(500).json(ret);
+
+    }
+
+    if(check.length > 0){
+
+      const newUser = 
+      {
+
+        name,
+        email, 
+        password,
+        type : "team",
+        isVerified: false,
+        verifiyCode 
+        
+      };
+
+      try{
+
+        const user = await  db.collection('Users').insertOne(newUser);
+
+      }
+
+      catch(err1){
+
+        let ret = { error:err1.message};
+      res.status(500).json(ret);
+      }
+
+
+    }
+
+    const newTeam = {
+
+      teamName,
+      user: user._id,
+      competition: check._id,
+      instances : [],
+      score:0
+    };
+
+    try{
+
+      const team = await db.collection('Teams').insertOne(newTeam);
+
+    }
+    catch(err2){
+      let ret = { error:err2.message};
+    res.status(500).json(ret);
+      
+    }
+
+
+
+    const query = { _id : check._id};
+
+    const query1 = { _id : user._id};
+
     const updateDocument = {
 
-    $push: {teams : teamObject}
+    $push: {teams : team._id}
 
 
     };
 
-    // I'm thinking that the competion is the collection here and that the team object is going to be a document
+    const updateDocument1 = {
+      
+      inst : team._id
+  
+      };
+
+
+
+
+    
     const results =  await db.collection('Competition').updateOne(query, updateDocument);
+
+    const results2 = await db.collection('Users').updateOne(query1, updateDocument1);
 
 
     var ret = { error:error};
@@ -281,12 +415,22 @@ app.post('/api/deleteUser', async (req, res) => {
 // ENDPOINT: createMachine
 // creates a machine. Expects a JSON containing Machine/Service name, IP, and
 // services to be added to the competition
-app.post('/api/createMachine', async(req, res) => {
+app.post('/api/addMachine', async(req, res) => {
 
+  // incoming: sid, machineObject
+  // outgoing:  error
+
+const {machineObject, sid} = req.body;
 	let error = '';
+
 
 	try {
 		const db = client.db();
+
+    const result = sm.authorize(sid);
+
+    const update = db.collection('Teams').updateOne({name: result.name}, machineObject)
+
 	}
 	catch (e) {
 		error = e.toString();
@@ -326,7 +470,7 @@ app.post('/api/getScore', async (req, res) => {
   const { teamName } = req.body;
 	try {
 		const db = client.db();
-    const results = await db.collection('Competition').find({"teams.name": teamName}).toArray();
+    const results = await db.collection('Teams').find({"teamName": teamName}).toArray();
     
     var score = 0;
 
@@ -396,6 +540,18 @@ app.post('/api/addInstances', async (req, res) =>
   var ret = {results:_ret, error:error};
   res.status(200).json(ret);
 });
+
+//Used to make random string for join code.
+function makeid(length) {
+  var result           = '';
+  var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()';
+  var charactersLength = characters.length;
+  for ( var i = 0; i < length; i++ ) {
+    result += characters.charAt(Math.floor(Math.random() * 
+charactersLength));
+ }
+ return result;
+}
 
 
 // db.test_invoice.update({user_id : 123456 , "items.item_name":"my_item_one"} , {$inc: {"items.$.price": 10}})
