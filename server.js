@@ -93,12 +93,12 @@ app.post('/api/addCompetition', async (req, res) =>
   // incoming: SessionID, CompName, Team Array, machine_services
   // outgoing: error , joinCode
 	
-  const { team, machine, start_time,end_time} = req.body;
+  const { teams, machine, start_time,end_time} = req.body;
 
   var joinCode = makeid(8);
 
   const newCompetition = {
-    team,
+    teams,
     machine, 
     start_time,
     end_time, 
@@ -107,6 +107,7 @@ app.post('/api/addCompetition', async (req, res) =>
   
   let error = '';
   
+  console.log("Trying something");
 
   try
   {
@@ -146,11 +147,11 @@ app.post('/api/deleteCompetition', async (req, res) =>
     //for each team we find Users
     comp.teams.forEach(element => {
         
-     const result = await db.collection('Teams').find({_id: element} );
+     const result =  db.collection('Teams').find({_id: element} );
   
-     const result1 = await db.collection('Users').deleteOne({ _id : result.user});
+     const result1 =  db.collection('Users').deleteOne({ _id : result.user});
   
-     const result2 = await db.collection('Teams').deleteOne({ _id : element});
+     const result2 =  db.collection('Teams').deleteOne({ _id : element});
       
     });
 
@@ -197,7 +198,7 @@ app.post('/api/login', async (req, res, next) =>
     ln = results[0].teams[0].score;
   }
 
-  var ret = { teamName:id, Instances:fn, Score:ln, error:''};
+  var ret = { teamName:id, Instances:fn, Score:ln, error:error};
   res.status(200).json(ret);
 });
 
