@@ -1,22 +1,31 @@
-
+const SessionManager = require('./session')
+const MongoClient = require('mongodb').MongoClient;
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const path = require('path');           
-const PORT = process.env.PORT || 5000;  
 
+const PORT = process.env.PORT || 5000;  
+const url = 'mongodb+srv://jason2992:WeLoveCOP4331@cop4331.njgcb.mongodb.net/COP4331?retryWrites=true&w=majority';
+//const url = 'mongodb+srv://cop4331.njgcb.mongodb.net/COP4331" --username jason2992 --password WeLoveCOP4331';
 
 const app = express();
 app.set(PORT);
 app.use(cors());
 app.use(bodyParser.json());
-const MongoClient = require('mongodb').MongoClient;
 const { join } = require('path');
 const { mkdir } = require('fs');
-const url = 'mongodb+srv://jason2992:WeLoveCOP4331@cop4331.njgcb.mongodb.net/COP4331?retryWrites=true&w=majority';
-//const url = 'mongodb+srv://cop4331.njgcb.mongodb.net/COP4331" --username jason2992 --password WeLoveCOP4331';
 const client = new MongoClient(url);
 client.connect();
+const db = client.db();
+const cols = {
+  users: db.collection('Users'),
+  sessions: db.collection('Sessions'),
+  teams: db.collection('Teams'),
+  comp: db.collection('Competition'),
+};
+
+const sm = new SessionManager(client.db());
 
 // For Heroku deployment
 
@@ -173,36 +182,58 @@ app.post('/api/deleteCompetition', async (req, res) =>
 
 
 // ENDPOINT: Login
-app.post('/api/login', async (req, res, next) => 
-{
-  // incoming: login, password
-  // outgoing: id, firstName, lastName, error
-	
- var error = '';
-
-  const { username, password } = req.body;
-
-  const db = client.db();
-  const results = await db.collection('Competition').find({"teams.username": username, "teams.password":password}).toArray();
-
-  //{$in{teams}}, {username:username,Password:password}
-
-  var id = -1;
-  var fn = '';
-  var ln = '';
-
-  if( results.length > 0 )
-  {
-    id = results[0].teams[0].name;
-    fn = results[0].teams[0].instances;
-    ln = results[0].teams[0].score;
+app.post('/api/login', async (req, res, next) => {
+  const body = req.body;
+  if (!body.username || !body.password) {
+    res.status(400).json({error: "Bad request"});
+    return;
   }
+  const username = body.username;
+  const password = body.password;
 
-  var ret = { teamName:id, Instances:fn, Score:ln, error:error};
-  res.status(200).json(ret);
+  console.log(`Got login request: username=${username}, password=${password}`);
+  // Get user
+  console.log(`Attempting to log in user ${username}`);
+  let user = await cols.users.find({ username, password }).toArray();
+  console.log(user)
+  if (user.length > 1 || user.length == 0) {
+    console.log('Invalid user');
+    return null;
+  }
+  let userId = user[0]._id;
+  console.log(`Found user with id: ${userId}`);
+
+  // Delete pre-existing sid, if it exists
+  await sm.clearUserSessions(userId);
+
+
+  const sid = await sm.createUserSession(userId);
+  if (sid == null) {
+    res.status(400).json({error: "User not found"});
+  }
+  else {
+    res.status(200).json({error: "", sid});
+  }
+  console.log(`User logged in - created session: ${sid}`);
 });
 
 
+app.post('/api/testAuthorize', async (req, res) => {
+  const body = req.body;
+  if (!body.sid) {
+    res.status(400).json({"error": "Bad request"});
+  }
+  const sid = body.sid;
+  const user = await sm.authorize(sid);
+  console.log(`Got: ${user}`);
+  if (user) {
+    console.log(`Successful authorization: username=${user.username}, id=${user._id}`);
+    res.status(200).json({"error": "", "username": user.username});
+  }
+  else {
+    res.status(500).json({"error": "shit"});
+  }
+});
 
 // ENDPOINT: addTeam
 //my idea here is that we are going to pass an array with all the teams with their information filled out.
