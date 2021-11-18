@@ -1,17 +1,17 @@
-module.exports = async function addTeam (req, res, next) {
+module.exports = async function addTeam (server, req, res, next) {
   // incoming: teamname, email, password, joinCode
   // outgoing: results[], error
 
   try{
     let error = '';
-    let verifiyCode = makeid(6);
+    let verifiyCode = server.verify.makeid(6);
 
     const { teamName, email, password ,joinCode, name } = req.body;
 
-    const db = client.db();
+    const dbm = server.dbm;
 
     try{
-    const check = db.collection('Competition').find({joinCode : joinCode});
+    const check = dbm.competitions.find({joinCode : joinCode});
 
     }
 
@@ -38,7 +38,7 @@ module.exports = async function addTeam (req, res, next) {
 
       try{
 
-        const user = await  db.collection('Users').insertOne(newUser);
+        const user = await  dbm.users.insertOne(newUser);
 
       }
 
@@ -62,7 +62,7 @@ module.exports = async function addTeam (req, res, next) {
 
     try{
 
-      const team = await db.collection('Teams').insertOne(newTeam);
+      const team = await dbm.teams.insertOne(newTeam);
 
     }
     catch(err2){
@@ -94,9 +94,9 @@ module.exports = async function addTeam (req, res, next) {
 
 
     
-    const results =  await db.collection('Competition').updateOne(query, updateDocument);
+    const results =  await dbm.competitions.updateOne(query, updateDocument);
 
-    const results2 = await db.collection('Users').updateOne(query1, updateDocument1);
+    const results2 = await dbm.users.updateOne(query1, updateDocument1);
 
 
     var ret = { error:error};

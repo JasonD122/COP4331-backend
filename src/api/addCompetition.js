@@ -1,11 +1,11 @@
-module.exports = function addCompetition (req, res, next) 
-{
+module.exports = async function addCompetition (server, req, res, next) {
   // incoming: SessionID, CompName, Team Array, machine_services
   // outgoing: error , joinCode
+  const dbm = server.dbm;
 	
   const { teams, machine, start_time,end_time} = req.body;
 
-  var joinCode = makeid(8);
+  var joinCode = server.verify.makeid(8);
 
   const newCompetition = {
     teams,
@@ -21,8 +21,7 @@ module.exports = function addCompetition (req, res, next)
 
   try
   {
-    const db = client.db();
-    const result = await db.collection('Competition').insertOne(newCompetition);
+    const result = await dbm.competitions.insertOne(newCompetition);
   }
   catch(e)
   {
