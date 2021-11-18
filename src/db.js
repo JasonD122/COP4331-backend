@@ -21,6 +21,11 @@ class DBManager {
 
     return this.db;
   }
+
+  async doesUserExist(email) {
+    const results = await this.users.find({ email }).toArray();
+    return results > 1;
+  }
 }
 
 module.exports = new DBManager();

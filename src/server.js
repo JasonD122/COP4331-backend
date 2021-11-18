@@ -1,4 +1,3 @@
-const SessionManager = require('./session')
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -125,7 +124,7 @@ app.use((req, res, next) =>
 });
 
 app.post('/api/login', preHandler(
-  {email: 'string:email', password: 'string'}, 
+  {email: 'email', password: 'string'}, 
   false, 
   API('login')
 ));
@@ -135,8 +134,8 @@ app.post('/api/addCompetition', preHandler(
     sessionId: 'string',
     name: 'string',
     maxTeams: 'int',
-    startTime: 'string:datetime',
-    endTime: 'string:datetime',
+    startTime: 'datetime',
+    endTime: 'datetime',
     machines: 'array',
   },
   true,
@@ -144,10 +143,23 @@ app.post('/api/addCompetition', preHandler(
 ));
 
 app.post('/api/addTeam', preHandler(
-  {email: 'string:email', password: 'string', name: 'string', joinCode: 'string'}, 
+  {email: 'email', password: 'string', name: 'string', joinCode: 'string'}, 
   true,
   API('addTeam')
-))
+));
+
+app.post('/api/register', preHandler(
+  {
+    email: 'email', 
+    password: 'string', 
+    userType: {
+      type: 'string', 
+      enum: ['team', 'admin'],
+    }
+  },
+  false,
+  API('register')
+));
 
 app.post('/api/testAuthorize', preHandler(
   null, 
