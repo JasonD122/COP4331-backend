@@ -1,4 +1,4 @@
-// const SessionManager = require('./session')
+j/ const SessionManager = require('./session')
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -8,7 +8,11 @@ const PORT = process.env.PORT || 5000;
 const url = 'mongodb+srv://jason2992:WeLoveCOP4331@cop4331.njgcb.mongodb.net/COP4331?retryWrites=true&w=majority';
 //const url = 'mongodb+srv://cop4331.njgcb.mongodb.net/COP4331" --username jason2992 --password WeLoveCOP4331';
 const session = require('./util/session'); 
-const db = require('./db').initMongoDB(url);
+const dbm = require('./db');
+const verify = require('./util/verify');
+
+const db = dbm.initMongoDB(url);
+
 console.log(db);
 var dbCols = {
   users: db.collection('Users'),
@@ -30,6 +34,10 @@ app.use(bodyParser.json());
 // };
 
 // const sm = new SessionManager(client.db());
+
+function API(name) {
+  return require(`./api/${name}`);
+}
 
 function preHandler(
   fieldsDef,  
@@ -89,7 +97,15 @@ function preHandler(
       }
     }
 
-    handler(req, res, next, {authedUser});
+    let server = {
+      authedUser,
+      app,
+      dbm,
+      session,
+      verify,
+    };
+
+    handler(server, req, res, next);
   };
 }
 
@@ -109,11 +125,35 @@ app.use((req, res, next) =>
 });
 
 app.post('/api/login', preHandler(
-  {email: 'string', password: 'string'}, 
+  {email: 'string:email', password: 'string'}, 
   false, 
-  require('./api/login')
+  API('login')
 ));
-app.post('/api/testAuthorize', preHandler(null, true, require('./api/testAuthorize')));
+
+app.post('/api/addCompetition', preHandler(
+  {
+    sessionId: 'string',
+    name: 'string',
+    maxTeams: 'int',
+    startTime: 'string:datetime',
+    endTime: 'string:datetime',
+    machines: 'array',
+  },
+  true,
+  API('addCompetition')
+));
+
+app.post('/api/addTeam', preHandler(
+  {email: 'string:email', password: 'string', name: 'string', joinCode: 'string'}, 
+  true,
+  API('addTeam')
+))
+
+app.post('/api/testAuthorize', preHandler(
+  null, 
+  true, 
+  API('testAuthorize')
+));
 
 // Basic server stuff
 app.listen(PORT, () => 

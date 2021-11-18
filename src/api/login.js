@@ -1,7 +1,8 @@
-const session = require('../util/session');
-const db = require('../db');
 
-module.exports = async function login(req, res, next, params) {
+module.exports = async function login(server, req, res, next) {
+  const dbm = server.dbm;
+  const session = server.session;
+
   const body = req.body;
   if (!body.email || !body.password) {
     res.status(400).json({error: "Bad request"});
@@ -13,8 +14,10 @@ module.exports = async function login(req, res, next, params) {
   console.log(`Got login request: email=${email}, password=${password}`);
   // Get user
   console.log(`Attempting to log in user ${email}`);
-  let user = await db.users.find({ email, password }).toArray();
+
+  let user = await dbm.users.find({ email, password }).toArray();
   console.log(user)
+
   if (user.length > 1 || user.length == 0) {
     res.status(400).json({error: "User not found"});
     console.log('Invalid user');
