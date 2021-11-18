@@ -1,4 +1,4 @@
-j/ const SessionManager = require('./session')
+const SessionManager = require('./session')
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
