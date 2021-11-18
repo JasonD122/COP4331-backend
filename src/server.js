@@ -109,7 +109,7 @@ app.use((req, res, next) =>
 });
 
 app.post('/api/login', preHandler(
-  {username: 'string', password: 'string'}, 
+  {email: 'string', password: 'string'}, 
   false, 
   require('./api/login')
 ));

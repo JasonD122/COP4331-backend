@@ -3,17 +3,17 @@ const db = require('../db');
 
 module.exports = async function login(req, res, next, params) {
   const body = req.body;
-  if (!body.username || !body.password) {
+  if (!body.email || !body.password) {
     res.status(400).json({error: "Bad request"});
     return;
   }
-  const username = body.username;
+  const email = body.email;
   const password = body.password;
 
-  console.log(`Got login request: username=${username}, password=${password}`);
+  console.log(`Got login request: email=${email}, password=${password}`);
   // Get user
-  console.log(`Attempting to log in user ${username}`);
-  let user = await db.users.find({ username, password }).toArray();
+  console.log(`Attempting to log in user ${email}`);
+  let user = await db.users.find({ email, password }).toArray();
   console.log(user)
   if (user.length > 1 || user.length == 0) {
     res.status(400).json({error: "User not found"});
