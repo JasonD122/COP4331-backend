@@ -225,23 +225,28 @@ class Service
 ```
 {
   error: "",
-  machines: [
+  teams: [
     {
-      name: "MachineName",
-      ip: "192.168.1.1",
-      services: [
+      name: "Team Name",
+      machines: [
         {
-          name: "ServiceName",
-          port: "69",
-          upCount: 6,
-          downCount: 9,
-          history: {
-            time: DateTime,
-            status: true/false
-          }
+          name: "MachineName",
+          ip: "192.168.1.1",
+          services: [
+            {
+              name: "ServiceName",
+              port: "69",
+              upCount: 6,
+              downCount: 9,
+              history: {
+                time: DateTime,
+                status: true/false
+              }
+            }
+          ]
         }
       ]
-    }
+    },
   ]
 }
 ```
