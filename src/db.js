@@ -5,7 +5,7 @@ class DBManager {
     this.db = null;
     this.users = null;
     this.sessions = null;
-    this.compititions = null;
+    this.competitions = null;
     this.teams = null;
   }
 

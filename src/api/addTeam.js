@@ -5,13 +5,14 @@ module.exports = async function addTeam (server, req, res, next) {
   try{
     let error = '';
     let verifiyCode = server.verify.makeid(6);
+    let user,team,check;
 
     const { teamName, email, password ,joinCode, name } = req.body;
 
     const dbm = server.dbm;
 
     try{
-    const check = dbm.competitions.find({joinCode : joinCode});
+     check = await dbm.competitions.find({joinCode : joinCode}).toArray();
 
     }
 
@@ -38,7 +39,8 @@ module.exports = async function addTeam (server, req, res, next) {
 
       try{
 
-        const user = await  dbm.users.insertOne(newUser);
+       const something = await  dbm.users.insertOne(newUser);
+       user = await dbm.users.findOne({name:name});
 
       }
 
@@ -50,43 +52,49 @@ module.exports = async function addTeam (server, req, res, next) {
 
 
     }
+    console.log(check[0]);
 
     const newTeam = {
 
       teamName,
       user: user._id,
-      competition: check._id,
+      competition: check[0]._id,
       instances : [],
       score:0
     };
 
     try{
-
-      const team = await dbm.teams.insertOne(newTeam);
-
+      
+      const something2 = await dbm.teams.insertOne(newTeam);
+      team = await dbm.teams.findOne({teamName:teamName});
+      
     }
     catch(err2){
       let ret = { error:err2.message};
-    res.status(500).json(ret);
+      res.status(500).json(ret);
       
     }
+    
+    
 
-
-
-    const query = { _id : check._id};
+    const query = { _id : check[0]._id};
 
     const query1 = { _id : user._id};
 
     const updateDocument = {
 
-    $push: {teams : team._id}
+    $push: {"teams" : team._id}
 
 
     };
 
     const updateDocument1 = {
-      
-      inst : team._id
+
+      $set:{
+
+      "inst" : team._id
+
+      }
   
       };
 
