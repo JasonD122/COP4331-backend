@@ -42,7 +42,7 @@ class Service
 ### Response
 ```
 {
-  sessionId: "",
+  sid: "",
   error: ""
 }
 ```
@@ -50,7 +50,7 @@ class Service
 ## /verifyEmail
 ```
 {
-  sessionId: "",  
+  sid: "",  
   verifyCode: ""
 }
 ```
@@ -58,7 +58,7 @@ class Service
 ### Response
 ```
 {
-  sessionId: "",
+  sid: "",
   error: ""
 }
 ```
@@ -67,7 +67,7 @@ class Service
 ## /addCompetition 
 ```
 {
-  sessionId: "",
+  sid: "",
   name: "Team Name",
   maxTeams: 69,
   startTime: "yyyy-mm-ddThh:mm:ss",
@@ -109,7 +109,7 @@ class Service
 ### Response
 ```
 {
-  sessionId: "",
+  sid: "",
   error: ""
 }
 ```
@@ -135,7 +135,7 @@ class Service
 ## /logout
 ```
 {
-  sessionId: ""
+  sid: ""
 }
 ```
 
@@ -217,7 +217,7 @@ class Service
 ## /statusHistory
 ```
 {
-  serviceId: "",
+  sid: "",
 }
 ```
 
@@ -251,7 +251,7 @@ class Service
 ## /deleteCompetition
 ```
 {
-  sessionId: "",
+  sid: "",
   name: ""
 }
 ```
