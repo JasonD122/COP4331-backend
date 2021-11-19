@@ -3,6 +3,7 @@ module.exports = async function deleteCompetition(server, req, res, next) {
   // outgoing: error , joinCode
 	
   const dbm = server.dbm;
+  const user = server.authedUser;
   const { sid } = req.body;
 
   //should return user object
@@ -11,11 +12,13 @@ module.exports = async function deleteCompetition(server, req, res, next) {
   let error="";
   try
   {
-    const userID = await dbm.sessions.findOne({ sid: sid });
-    
-    const user = await dbm.users.findOne({ _id: userID.user });
-    
+       
     const compe = await dbm.competitions.findOne({_id : user.inst});
+
+    if (!compe) {
+      res.status(200).json({error: "Competition doesn't exist"});
+      return;
+    }
     
     const length1 = compe.teams.length;
     
@@ -49,15 +52,15 @@ module.exports = async function deleteCompetition(server, req, res, next) {
     const delete3 = dbm.competitions.deleteOne({_id:compe._id});
 
 
-  let ret = {error: ""};
-  res.status(200).json(ret);
-  
-}
-catch(err1){
-  
-  let ret= {error: err1.message}
-  res.status(450).json(ret);
-}
+    let ret = {error: ""};
+    res.status(200).json(ret);
+    
+  }
+  catch(err1){
+    
+    let ret= {error: err1.message}
+    res.status(450).json(ret);
+  }
 
 
 }
