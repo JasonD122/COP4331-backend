@@ -1,40 +1,66 @@
-module.exports = function deleteCompetitionHandler(req, res, next) {
+module.exports = async function deleteCompetition(server, req, res, next) {
   // incoming: SessionID or Competition _id
   // outgoing: error , joinCode
 	
+  const dbm = server.dbm;
+  const user = server.authedUser;
   const { sid } = req.body;
 
   //should return user object
-  const user = sm.authorize(sid);
+  //const user = sm.authorize(sid);
   
   let error="";
-
-  
   try
   {
+       
+    const compe = await dbm.competitions.findOne({_id : user.inst});
+
+    if (!compe) {
+      res.status(200).json({error: "Competition doesn't exist"});
+      return;
+    }
     
-    // we use user object to find competition to delete
-    comp = await db.collection('Competition').find({ _id : user.inst});
-  
-    //for each team we find Users
-    comp.teams.forEach(element => {
-        
-     const result =  db.collection('Teams').find({_id: element} );
-  
-     const result1 =  db.collection('Users').deleteOne({ _id : result.user});
-  
-     const result2 =  db.collection('Teams').deleteOne({ _id : element});
+    const length1 = compe.teams.length;
+    
+    let counter = 0;
+
+    const arr = compe.teams;
+    
+    
+    
+    for(counter = 0; counter < length1; counter++){
       
+      var neeDelete = await dbm.teams.findOne({_id : arr[counter]});
+      console.log(neeDelete);
+      
+      var delete2 =  await dbm.users.deleteOne({_id:neeDelete.user})
+    }
+    
+
+    const delete1 = await dbm.teams.deleteMany({ _id: 
+
+        {
+
+          $in : compe.teams
+
+        }
+    
+    
+    
     });
 
-    const del = await db.collection('Competition').deleteOne(comp);
+    const delete3 = dbm.competitions.deleteOne({_id:compe._id});
 
+
+    let ret = {error: ""};
+    res.status(200).json(ret);
+    
   }
-  catch(e)
-  {
-    res.status(500).json({message : e.toString()})
+  catch(err1){
+    
+    let ret= {error: err1.message}
+    res.status(450).json(ret);
   }
 
-  let ret = { error: error, joinCode:joinCode };
-  res.status(200).json(ret);
+
 }
