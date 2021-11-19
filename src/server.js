@@ -91,7 +91,7 @@ function validateBodyLiteral(def, key, val) {
 }
 
 function validateBody(body, fieldsDef, res) {
-  if (Object.keys(body).length != Object.keys(fieldsDef).length) {
+  if (Object.keys(body).length < Object.keys(fieldsDef).length) {
     genBadRequest(res, fieldsDef);
     return;
   }
