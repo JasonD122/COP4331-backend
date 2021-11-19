@@ -314,9 +314,9 @@ app.post('/api/register', preHandler(
   API('register')
 ));
 
-app.post('/api/verifyEmail', preHandler({});
-
-app.post('/api/logout', preHandler({});
+// app.post('/api/verifyEmail', preHandler({}));
+//
+// app.post('/api/logout', preHandler({});
 
 app.post('/api/testAuthorize', preHandler(
   null, 
