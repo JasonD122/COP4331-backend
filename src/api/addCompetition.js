@@ -1,8 +1,8 @@
 module.exports = async function addCompetition (server, req, res, next) {
   // incoming: SessionID, CompName, Team Array, machine_services
   // outgoing: error , joinCode
-  const dbm = server.dbm;
 	
+  const dbm = server.dbm;
   const { teams, machine, start_time,end_time} = req.body;
 
   var joinCode = server.verify.makeid(8);
