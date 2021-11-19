@@ -1,4 +1,4 @@
-module.exports = function deleteCompetition(server, req, res, next) {
+module.exports = async function deleteCompetition(server, req, res, next) {
   // incoming: SessionID or Competition _id
   // outgoing: error , joinCode
 	
@@ -49,7 +49,7 @@ module.exports = function deleteCompetition(server, req, res, next) {
     const delete3 = dbm.competitions.deleteOne({_id:compe._id});
 
 
-  let ret = {userID:userID , user:user};
+  let ret = {error: ""};
   res.status(200).json(ret);
   
 }

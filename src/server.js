@@ -271,7 +271,6 @@ app.post('/api/login', preHandler(
 
 app.post('/api/addCompetition', preHandler(
   {
-    sid: 'string',
     name: 'string',
     maxTeams: 'number',
     startTime: 'datetime',
@@ -286,6 +285,14 @@ app.post('/api/addCompetition', preHandler(
   },
   true,
   API('addCompetition')
+));
+
+app.post('/api/deleteCompetition', preHandler(
+  {
+    name: 'string'
+  },
+  true,
+  API('deleteCompetition')
 ));
 
 app.post('/api/addTeam', preHandler(
