@@ -228,9 +228,11 @@ class Service
   machines: [
     {
       name: "MachineName",
+      ip: "192.168.1.1",
       services: [
         {
           name: "ServiceName",
+          port: "69",
           upCount: 6,
           downCount: 9,
           history: {
