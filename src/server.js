@@ -187,6 +187,10 @@ function preHandler(
     const body = req.body;
     let authedUser = null;
 
+    if (reqSidAuth) {
+      fieldsDef.sid = 'string';
+    }
+
     if (fieldsDef) {
       let body = req.body;
       // If the validator fails, optimally hope that the body is actually
