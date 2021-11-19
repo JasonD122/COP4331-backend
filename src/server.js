@@ -12,30 +12,166 @@ const verify = require('./util/verify');
 
 const db = dbm.initMongoDB(url);
 
-console.log(db);
-var dbCols = {
-  users: db.collection('Users'),
-  sessions: db.collection('Sessions'),
-};
-console.log(dbCols);
-
 const app = express();
 app.set(PORT);
 app.use(cors());
 app.use(bodyParser.json());
 // const { join } = require('path');
 // const { mkdir } = require('fs');
-// const cols = {
-//   users: db.collection('Users'),
-//   sessions: db.collection('Sessions'),
-//   teams: db.collection('Teams'),
-//   comp: db.collection('Competition'),
-// };
 
-// const sm = new SessionManager(client.db());
+function genBadRequest(res, fieldsDef, msg='') {
+  res.status(400).json({
+    error: `Bad request! Expected: '${Object.keys(fieldsDef)}'.${msg ? ' ' : ''}${msg}`
+  });
+}
 
 function API(name) {
   return require(`./api/${name}`);
+}
+
+function verifyEmail(email) {
+  return true;
+}
+
+function verifyPassword(password) {
+  return true;
+}
+
+function verifyEnum(field, accepted) {
+  for (const eField of accepted) {
+    if (eField == field) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function isString(obj) {
+  return (typeof obj === 'string' || obj instanceof String);
+}
+
+function validateBodyLiteral(def, key, val) {
+  switch(def) {
+    case 'string':
+      if (!isString(val)) {
+        return `${key} - Not a string`;
+      }
+    case 'email':
+      if(!verifyEmail(val)) {
+        return `${key} - Invalid email format`;
+      }
+      break;
+
+    case 'password':
+      if (!verifyPassword(val)) {
+        return `${key} - Bad password`;
+      }
+      break;
+
+    case 'datetime':
+      try {
+        if (!Date.parse(val)) {
+          return `${key} - Invalid date format`;
+        }
+      }
+      catch(e) {
+        return `${key} - Invalid date format`;
+      }
+      break;
+
+    case 'number':
+      if (isNaN(val) || isString(val)) {
+        return `${key} - NaN`;
+      }
+      break;
+  } 
+
+  return null;
+}
+
+function validateBody(body, fieldsDef, res) {
+  if (Object.keys(body).length < Object.keys(fieldsDef).length) {
+    genBadRequest(res, fieldsDef);
+    return;
+  }
+  else {
+    console.log('Validating body with def:')
+    console.log(fieldsDef);
+    for (const key in body) {
+      const def = fieldsDef[key];
+      const val = body[key];
+
+      // Test if the key in the JSON matches the expected key
+      if (!def) {
+        genBadRequest(res, fieldsDef);
+        return false;
+      }
+
+      // Test array definition
+      if (Array.isArray(def)) {
+        // def: array of definitions, ONLY 1 INDEX
+        // key: key in JSON
+        // val: array of sub-objects to check
+        if (!Array.isArray(val)) {
+          genBadRequest(res, fieldsDef, `${key} - Expected an array`);
+          return false;
+        }
+
+        if (def.length > 0) {
+          if (isString(def[0]) || !isNaN(def[0])) {
+            let validateError = validateBodyLiteral(def, key, val);
+            if (validateError) {
+              genBadRequest(res, fieldsDef, validateError);
+              return false;
+            }
+          }
+          // Is an object
+          else {
+            for (const index in val) {
+              if (!validateBody(val[index], def[0], res)) {
+                return false;
+              }
+            }
+          }
+        }
+      }
+
+      // Test object definition
+      else if (!isString(def)) {
+        // It's an object
+        // def: definition of sub-object
+        // key: key in JSON
+        // val: sub-object to check
+        if (def._type) {
+          if (def._enum && !verifyEnum(val, def._enum)) {
+            genBadRequest(res, fieldsDef, 
+              `${key} - Invalid option. Expected: '${def._enum}'`
+            );
+            return false;
+          }
+        }
+        else {
+          if (!validateBody(val, def, res)) {
+            return false;
+          }
+        }
+
+      }
+
+      // Test literal definition
+      else {
+        let validateError = validateBodyLiteral(def, key, val);
+        if (validateError) {
+          genBadRequest(res, fieldsDef, validateError);
+          return false; 
+        }
+      }
+    }
+  }
+
+  // If we made it here, WE GUCCI
+  return true;
 }
 
 function preHandler(
@@ -47,35 +183,34 @@ function preHandler(
     throw 'No handler passed!';
   }
 
-  // console.log(fieldsDef);
-  // console.log(reqSidAuth);
-  // console.log(handler);
   return async function (req, res, next) {
     const body = req.body;
     let authedUser = null;
 
+    if (reqSidAuth) {
+      fieldsDef.sid = 'string';
+    }
+
     if (fieldsDef) {
       let body = req.body;
-      let badStatus = () => {
-        res.status(400).json({
-          error: `Bad request! Expected: ${Object.keys(fieldsDef)}`
-        });
-      }
-
-      if (Object.keys(body).length != Object.keys(fieldsDef).length) {
-        badStatus();
-        return;
-      }
-      else {
-        console.log(fieldsDef);
-        for (const reqKey in body) {
-          console.log(reqKey);
-          console.log(fieldsDef[reqKey]);
-          if (!fieldsDef[reqKey]) {
-            badStatus();
-            return;
-          }
+      // If the validator fails, optimally hope that the body is actually
+      // correct, and that no server error occurs (will be caught in try-catch
+      // below).
+      try {
+        if (!validateBody(body, fieldsDef, res)) {
+          return;
         }
+      }
+      catch(e) {
+        console.log('>>>>Exception when validing body');
+        console.log('body:');
+        console.log(body);
+        console.log('fieldsDef:');
+        console.log(fieldsDef);
+        console.log('error:')
+        console.log(e.message);
+        console.log(e.stack);
+        console.log('<<<<')
       }
     }
 
@@ -104,7 +239,12 @@ function preHandler(
       verify,
     };
 
-    handler(server, req, res, next);
+    try {
+      handler(server, req, res, next);
+    }
+    catch(e) {
+      res.status(500).json({error: `Internal server error: ${e.message}`});
+    }
   };
 }
 
@@ -131,12 +271,18 @@ app.post('/api/login', preHandler(
 
 app.post('/api/addCompetition', preHandler(
   {
-    sessionId: 'string',
+    sid: 'string',
     name: 'string',
-    maxTeams: 'int',
+    maxTeams: 'number',
     startTime: 'datetime',
     endTime: 'datetime',
-    machines: 'array',
+    machines: [{
+      name: 'string',
+      services: [{
+        name: 'string',
+        port: 'number'
+      }],
+    }],
   },
   true,
   API('addCompetition')
@@ -153,8 +299,8 @@ app.post('/api/register', preHandler(
     email: 'email', 
     password: 'string', 
     userType: {
-      type: 'string', 
-      enum: ['team', 'admin'],
+      _type: 'string', 
+      _enum: ['team', 'admin'],
     }
   },
   false,
