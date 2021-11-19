@@ -1,18 +1,32 @@
-module.exports = function addInstances (req, res, next) 
-{
-  // incoming: instances object arrqay
-  // outgoing: res:200, error
+module.exports = function addInstances (server, req, res, next) {
 
-  var error = '';
+  // incoming: sid, instances
+  // outgoing:  error
 
-  const { InstanceObject , tname } = req.body;
+const {instances, sid} = req.body;
+	let error = '';
+  const dbm= server.dbm
 
+  //User much be from a team
+  const user = server.authedUser;
 
-  const db = client.db();
+	try {
+	
 
-  await db.collection('competition').updateone({"teams.name":tname}, {$set:{ 'teams.$.instances':InstanceObject}});
-  
-  
-  var ret = {results:_ret, error:error};
-  res.status(200).json(ret);
+    const update = dbm.teams.updateOne({_id: user.inst}, {
+      
+      $set :{
+        instances
+    }
+  });
+
+	}
+	catch (e) {
+		error = e.toString();
+	}
+
+	let ret = {error:error};
+	res.status(200).json(ret);
+
 }
+
