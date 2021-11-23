@@ -201,7 +201,10 @@ class Service
 {
   sid: "",
   machines: [
-    Machine
+    {
+      name: 'machine name',
+      ip: 'ip string'
+    }
   ]
 }
 ```
