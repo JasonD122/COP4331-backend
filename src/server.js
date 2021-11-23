@@ -314,9 +314,11 @@ app.post('/api/register', preHandler(
   API('register')
 ));
 
-// app.post('/api/verifyEmail', preHandler({}));
-//
-// app.post('/api/logout', preHandler({});
+app.post('/api/statusHistory', preHandler(
+  { sid: 'string' },
+  true,
+  API('statusHistory')
+))
 
 app.post('/api/testAuthorize', preHandler(
   null, 
