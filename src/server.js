@@ -269,6 +269,19 @@ app.post('/api/login', preHandler(
   API('login')
 ));
 
+app.post('/api/register', preHandler(
+  {
+    email: 'email', 
+    password: 'string', 
+    // userType: {
+    //   _type: 'string', 
+    //   _enum: ['team', 'admin'],
+    // }
+  },
+  false,
+  API('register')
+));
+
 app.post('/api/addCompetition', preHandler(
   {
     name: 'string',
@@ -288,31 +301,32 @@ app.post('/api/addCompetition', preHandler(
 ));
 
 app.post('/api/deleteCompetition', preHandler(
-  {
-    name: 'string'
-  },
+  { name: 'string' },
   true,
   API('deleteCompetition')
 ));
 
 app.post('/api/addTeam', preHandler(
-  {email: 'email', password: 'string', name: 'string', joinCode: 'string',teamName:'string'}, 
+  {
+    email: 'email', 
+    password: 'string', 
+    name: 'string', 
+    joinCode: 'string',
+    teamName:'string'
+  }, 
   true,
   API('addTeam')
 ));
 
-app.post('/api/register', preHandler(
+app.post('/api/addInstance', preHandler(
   {
-    email: 'email', 
-    password: 'string', 
-    // userType: {
-    //   _type: 'string', 
-    //   _enum: ['team', 'admin'],
-    // }
-  },
-  false,
-  API('register')
-));
+    sid: 'string',
+    machines: [{
+      name: 'string',
+      ip: 'string'
+    }]
+  }
+))
 
 app.post('/api/statusHistory', preHandler(
   { sid: 'string' },
