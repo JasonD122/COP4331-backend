@@ -16,7 +16,7 @@ class DBManager {
 
     this.sessions = this.db.collection('Sessions');
     this.users = this.db.collection('Users');
-    this.compititions = this.db.collection('Competition');
+    this.competitions = this.db.collection('Competition');
     this.teams = this.db.collection('Teams');
 
     return this.db;

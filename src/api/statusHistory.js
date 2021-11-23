@@ -1,74 +1,65 @@
 module.exports = async function statusHistory (server, req, res, next) {
-
- 
-    // incoming: sid
-    // outgoing:  error, machineObject depending on sid
-  
-  const { sid} = req.body;
-  let error = '';
-  let user,userID, instance,count;
-  let checks =[];
   
   const dbm = server.dbm;
-  
-  try {
-  
-  userID = await dbm.sessions.findOne({ sid: sid });
-  
- user = await dbm.users.findOne({ _id: userID.user });
- console.log(user);
-  
-  console.log(userID);
-  
-  if( user.userType.localeCompare("admin")==0){
-    
-      instance = await dbm.competitions.find({_id:user.inst});
+  const user = server.authedUser;
 
-      for(let i = 0; i < instance.teams.length; i++){
+  let teamIds;
+  
+  switch(user.type) {
+    case 'admin':
+      let competition = await dbm.competitions.findOne({ _id: user.inst });
+      teamIds = competition.teams;
+      break;
 
-        let temp = dbm.teams.findOne({_id : instance.teams[i]});
+    case 'team':
+      teamIds = [ user.inst ];
+      break;
 
+    default:
+      res.status(500).json({ error: `Unknown user type: ${user.type}` });
+      return;
+  }
 
-        count = checks.push(temp.instances);
+  if (!teamIds) {
+    res.status(200).json({ error:"", machines: [] });
+    return;
+  }
 
+  let response = {
+    error: "",
+    teams: [],
+  };
+
+  let teams = await dbm.teams.find({ _id: { $in: teamIds } }).toArray();
+  for (const team of teams) {
+    // This is to be resilient against db changes or missing fields...
+    let machines = [];
+    for (const machine of team.instances) {
+      let services = [];
+
+      for (const service of machine.services) {
+        services.push({
+          name: service.name || "",
+          port: service.port || 0,
+          status: service.status || false,
+          history: service.history || [],
+          upCount: service.upCount || 0,
+          downCount: service.downCount || 0,
+        });
       }
 
-      console.log(checks);
+      machines.push({
+        name: machine.name || "",
+        ip: machine.ip || 0,
+        services
+      })
+    }
 
-      ret = {error:"",check:checks};
-
-      res.status(200).json(ret);
-
-
+    response.teams.push({
+      name: team.name,
+      machines: machines,
+    });
   }
 
-  else if( user.type.localeCompare("team")==0){
-
-    instance = dbm.teams.findOne({_id : user.inst});
-
-    const check = instance.instances;
-
-    console.log(check  + " looked up teams");
-    ret = {error:"",check:check};
-
-      res.status(200).json(ret);
-
-  }
-
-  else{
-  
-  let ret = {error:"Didn't find shit"};
-  res.status(500).json(ret);
-
-  }
-  
-}
-
-catch (e) {
-    error = e.toString();
-
- let ret = {error:error};
- res.status(500).json(ret);
-}
-
+  res.status(200).json(response);
 }  
