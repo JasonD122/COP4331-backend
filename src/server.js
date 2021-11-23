@@ -318,14 +318,16 @@ app.post('/api/addTeam', preHandler(
   API('addTeam')
 ));
 
-app.post('/api/addInstance', preHandler(
+app.post('/api/addInstances', preHandler(
   {
     sid: 'string',
     machines: [{
       name: 'string',
       ip: 'string'
     }]
-  }
+  },
+  true,
+  API('addInstances')
 ))
 
 app.post('/api/statusHistory', preHandler(

@@ -1,9 +1,9 @@
-module.exports = function addInstances (server, req, res, _) {
+module.exports = function addInstances (server, req, res, next) {
 
   // incoming: sid, instances
   // outgoing:  error
 
-  let {instances, _} = req.body;
+  let {instances, sid} = req.body;
 	let error = '';
   const dbm= server.dbm
 
