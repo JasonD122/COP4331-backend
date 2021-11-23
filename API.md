@@ -238,10 +238,10 @@ class Service
               port: "69",
               upCount: 6,
               downCount: 9,
-              history: {
+              history: [{
                 time: DateTime,
                 status: true/false
-              }
+              }]
             }
           ]
         }
