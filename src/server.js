@@ -225,7 +225,7 @@ function preHandler(
       authedUser = await session.authorize(sid);
       if(!authedUser) {
         res.status(400).json({
-          error: "Invalid session!"
+          error: "Invalid session! The session could have expired or the user doesn't exist anymore."
         });
         return;
       }
@@ -267,6 +267,12 @@ app.post('/api/login', preHandler(
   {email: 'email', password: 'string'}, 
   false, 
   API('login')
+));
+
+app.post('/api/logout', preHandler(
+  {}, 
+  true, 
+  API('logout')
 ));
 
 app.post('/api/addCompetition', preHandler(
