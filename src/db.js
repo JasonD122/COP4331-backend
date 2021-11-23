@@ -24,7 +24,7 @@ class DBManager {
 
   async doesUserExist(email) {
     const results = await this.users.find({ email }).toArray();
-    return results > 1;
+    return results.length > 1;
   }
 }
 
