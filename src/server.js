@@ -305,10 +305,10 @@ app.post('/api/register', preHandler(
   {
     email: 'email', 
     password: 'string', 
-    userType: {
-      _type: 'string', 
-      _enum: ['team', 'admin'],
-    }
+    // userType: {
+    //   _type: 'string', 
+    //   _enum: ['team', 'admin'],
+    // }
   },
   false,
   API('register')
