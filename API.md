@@ -26,7 +26,7 @@ class Service
 - /editCompetition **this is bs**
 - /addTeam
 - /editTeam **this is bs**
-- /addMachine
+- /addInstances
 - /getRequiredMachines
 - /statusHistory
 
@@ -196,7 +196,7 @@ class Service
 ```
 
 
-## /addMachines
+## /addInstances
 ```
 {
   sessionId: "",
