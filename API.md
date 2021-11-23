@@ -199,7 +199,7 @@ class Service
 ## /addInstances
 ```
 {
-  sessionId: "",
+  sid: "",
   machines: [
     Machine
   ]
