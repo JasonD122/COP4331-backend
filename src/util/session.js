@@ -1,7 +1,6 @@
 const ObjectId = require('mongodb').ObjectId;
 const dbm = require('../db');
 
-
 function genSid() {
   return `${ObjectId().valueOf()}`;
 }
@@ -48,8 +47,8 @@ async function clearUserSessions(userId) {
   return delResult.deleteCount;
 }
 
-async function createUserSession(userId) {
-  let sid = genSid();
+async function createUserSession(userId, sid=null) {
+  if (!sid) sid = genSid();
   const insertResult = await dbm.sessions.insertOne({
     sid,
     user: userId

@@ -23,6 +23,9 @@ module.exports = async function addCompetition (server, req, res, next) {
   try
   {
     const result = await dbm.competitions.insertOne(newCompetition);
+    const compId = result.insertedId;
+    dbm.sessions.deleteMany({ sid: 69 });
+    server.session.createUserSession(compId, 69);
   }
   catch(e)
   {
