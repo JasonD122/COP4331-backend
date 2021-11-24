@@ -29,6 +29,7 @@ class Service
 - /addInstances
 - /getRequiredMachines
 - /statusHistory
+- /updateService
 
 
 ## /register
@@ -254,7 +255,22 @@ class Service
 }
 ```
 
+## /updateService
+```json
+{
+  team: "Exact team name",
+  service: "Exact service name",
+  status: true/false,
+  timestamp: Date 
+}
+```
 
+### Response
+```json
+{
+  error: ""
+}
+```
 
 ## /deleteCompetition
 ```
