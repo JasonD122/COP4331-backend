@@ -2,6 +2,7 @@ module.exports = async function addCompetition (server, req, res, next) {
   // incoming: SessionID, CompName, Team Array, machine_services
   // outgoing: error , joinCode
 	
+  const dbm = server.dbm;
   const {sid, machines, maxTeams, startTime,endTime,name} = req.body;
 
   var joinCode = server.verify.makeid(8);
@@ -18,8 +19,6 @@ module.exports = async function addCompetition (server, req, res, next) {
   };
   
   let error = '';
-  
-  console.log("Trying something");
 
   try
   {
