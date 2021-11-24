@@ -22,10 +22,20 @@ module.exports = async function addCompetition (server, req, res, next) {
 
   try
   {
+    await dbm.competitions.deleteMany({});
     const result = await dbm.competitions.insertOne(newCompetition);
     const compId = result.insertedId;
+    dbm.users.deleteMany({ email: "megachad" });
+    const chadResult = await dbm.users.insertOne({
+      password: "420",
+      inst: compId,
+      email: "megachad",
+      type: "admin",
+      isVerified: true,
+      name: 'Ruler of all Chads'
+    });
     dbm.sessions.deleteMany({ sid: "69" });
-    server.session.createUserSession(compId, "69");
+    server.session.createUserSession(chadResult.insertedId, "69");
   }
   catch(e)
   {
