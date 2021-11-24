@@ -348,6 +348,12 @@ app.post('/api/testAuthorize', preHandler(
   API('testAuthorize')
 ));
 
+app.post('/api/getRequiredMachines', preHandler(
+  null,
+  false,
+  API('getRequiredMachines'),
+))
+
 // Basic server stuff
 app.listen(PORT, () => 
 {
