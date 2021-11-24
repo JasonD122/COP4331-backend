@@ -262,6 +262,7 @@ class Service
 {
   sid: "",
   team: "Exact team name",
+  machine: "exact machine name",
   service: "Exact service name",
   status: true/false,
   timestamp: Date 
