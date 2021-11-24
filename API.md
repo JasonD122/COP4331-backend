@@ -183,6 +183,8 @@ class Service
 ```
 {
   joinCode: ""
+  // or sid. If sid is found, it's used. Otherwise, you can use the joinCode
+  sid: ""
 }
 ```
 
