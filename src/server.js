@@ -342,6 +342,20 @@ app.post('/api/statusHistory', preHandler(
   API('statusHistory')
 ))
 
+app.post('/api/updateService', preHandler(
+  {
+    sid:"string",
+    machine:"string",
+    team:'string', 
+    service: 'string', 
+    status: 'boolean', 
+    timestamp: 'dateTime',
+  },
+  false,
+  API('updateService')
+
+));
+
 app.post('/api/testAuthorize', preHandler(
   null, 
   true, 
