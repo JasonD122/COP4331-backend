@@ -256,7 +256,7 @@ class Service
 ```
 
 ## /updateService
-```json
+```
 {
   team: "Exact team name",
   service: "Exact service name",
@@ -266,7 +266,7 @@ class Service
 ```
 
 ### Response
-```json
+```
 {
   error: ""
 }
