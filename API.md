@@ -260,6 +260,7 @@ class Service
 ## /updateService
 ```
 {
+  sid: "",
   team: "Exact team name",
   service: "Exact service name",
   status: true/false,
