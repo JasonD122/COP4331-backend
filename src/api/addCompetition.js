@@ -9,9 +9,11 @@ module.exports = async function addCompetition (server, req, res, next) {
 
   var joinCode = server.verify.makeid(8);
 
+  const existingComp = await dbm.competitions.findOne({});
+
   const newCompetition = {
     teams:[],
-    machines, 
+    machines: machines, 
     startTime,
     endTime, 
     joinCode,
@@ -19,6 +21,10 @@ module.exports = async function addCompetition (server, req, res, next) {
     name,
     joinCode
   };
+
+  if (body.debug && existingComp.machiens) {
+    if (machines.length === 0) newCompetition.machines = existingComp.machines;
+  }
   
   let error = '';
 
