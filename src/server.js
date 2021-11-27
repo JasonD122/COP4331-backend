@@ -374,6 +374,12 @@ app.post('/api/verifyEmail', preHandler(
   API('verifyEmail')
 ));
 
+app.post('/api/forgotPass', preHandler(
+  { username:'string' },
+  false,
+  API('forgotPass')
+));
+
 // Basic server stuff
 app.listen(PORT, () => 
 {
