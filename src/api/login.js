@@ -29,13 +29,12 @@ module.exports = async function login(server, req, res, next) {
   // Delete pre-existing sid, if it exists
   await session.clearUserSessions(userId);
 
-
   const sid = await session.createUserSession(userId);
   if (sid == null) {
-    res.status(400).json({error: "User not found"});
+    res.status(200).json({ error: "User not found" });
   }
   else {
-    res.status(200).json({error: "", sid});
+    res.status(200).json({ error: "", sid, type: user[0].type });
   }
   console.log(`User logged in - created session: ${sid}`);
 }
