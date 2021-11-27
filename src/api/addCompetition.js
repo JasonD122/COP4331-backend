@@ -3,8 +3,9 @@ module.exports = async function addCompetition (server, req, res, next) {
   // outgoing: error , joinCode
 	
   const dbm = server.dbm;
+  const body = req.body;
   const user = server.authedUser;
-  const {sid, machines, maxTeams, startTime,endTime,name} = req.body;
+  const {sid, machines, maxTeams, startTime,endTime,name} = body;
 
   var joinCode = server.verify.makeid(8);
 
@@ -21,37 +22,56 @@ module.exports = async function addCompetition (server, req, res, next) {
   
   let error = '';
 
+  // const existingComps = await dbm.competitions.find({ name }).toArray();
+  // if (existingComps.length > 0) {
+  //   res.status(200).json({ error: `Competition '${name}' already exists` });
+  //   return;
+  // }
+
   try
   {
-    await dbm.competitions.deleteMany({});
+    if (body.debug && body.debug !== 'dontdelete') {
+      await dbm.competitions.deleteMany({});
+    }
+
     const result = await dbm.competitions.insertOne(newCompetition);
-    const teams = await dbm.teams.find({}, { _id: 1 }).toArray();
-    await dbm.users.updateMany(
-      { type: 'admin' },
-      { 
-        $set: { 
-          inst: result.insertedId,
-          teams
+    const teamIds = (await dbm.teams.find({}, { _id: 1 })
+      .toArray())
+      .map(o => o._id);
+
+    if (req.body.debug) {
+      await dbm.users.updateMany(
+        { type: 'admin' },
+        { 
+          $set: { 
+            inst: result.insertedId,
+          }
         }
-      }
-    );
+      );
+
+      await dbm.competitions.updateOne(
+        { _id: result.insertedId },
+        { $set: { teams: teamIds } }
+      );
+    }
 
     // await dbm.users.updateOne(
     //   { _id: user._id },
     //   { $set: { inst: result.insertedId }}
     // );
-    const compId = result.insertedId;
-    dbm.users.deleteMany({ email: "megachad" });
-    const chadResult = await dbm.users.insertOne({
-      password: "420",
-      inst: compId,
-      email: "megachad",
-      type: "admin",
-      isVerified: true,
-      name: 'Ruler of all Chads'
-    });
-    dbm.sessions.deleteMany({ sid: "69" });
-    server.session.createUserSession(chadResult.insertedId, "69");
+
+    // const compId = result.insertedId;
+    // dbm.users.deleteMany({ email: "megachad" });
+    // const chadResult = await dbm.users.insertOne({
+    //   password: "420",
+    //   inst: compId,
+    //   email: "megachad",
+    //   type: "admin",
+    //   isVerified: true,
+    //   name: 'Ruler of all Chads'
+    // });
+    // dbm.sessions.deleteMany({ sid: "69" });
+    // server.session.createUserSession(chadResult.insertedId, "69");
   }
   catch(e)
   {

@@ -101,6 +101,7 @@ function validateBody(body, fieldsDef, res) {
     console.log('Validating body with def:')
     console.log(fieldsDef);
     for (const key in body) {
+      if (key === 'debug') continue;
       const def = fieldsDef[key];
       const val = body[key];
 
@@ -224,16 +225,16 @@ function preHandler(
         });
         return;
       }
-      if (sid === 69) {
-        const comp = await dbm.competitions.findOne({});
-        if (comp) {
-          const user = await dbm.users.findOne({ inst: comp._id }); 
-          if (user) authedUser = user;
-        }
-      }
-      else {
+      // if (sid === 69) {
+      //   const comp = await dbm.competitions.findOne({});
+      //   if (comp) {
+      //     const user = await dbm.users.findOne({ inst: comp._id }); 
+      //     if (user) authedUser = user;
+      //   }
+      // }
+      // else {
         authedUser = await session.authorize(sid);
-      }
+      // }
 
 
       if(!authedUser) {

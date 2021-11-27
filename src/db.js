@@ -9,6 +9,7 @@ class DBManager {
     this.teams = null;
     this.emailVerif = null;
     this.passResets = null;
+    this.su = null;
   }
 
   initMongoDB(url) {
@@ -16,6 +17,7 @@ class DBManager {
     client.connect();
     this.db = client.db();
 
+    this.su = this.db.collection('Senpai');
     this.sessions = this.db.collection('Sessions');
     this.users = this.db.collection('Users');
     this.competitions = this.db.collection('Competition');

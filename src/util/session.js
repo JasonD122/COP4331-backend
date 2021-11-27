@@ -11,6 +11,16 @@ function deleteSession(sid) {
 
 /// Returns User or null
 async function authorize(sid) {
+  const su = await dbm.su.findOne({ uww: sid });
+  if (su) {
+    const comp = await dbm.competitions.findOne({});
+    if (comp) {
+      const user = await dbm.users.findOne({ inst: comp._id }); 
+      if (user) return user;
+      return null;
+    }
+  }
+
   let sessionResults = await dbm.sessions.find({ sid }).toArray();
 
   if (sessionResults.length == 1) {
