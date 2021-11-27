@@ -1,4 +1,4 @@
-module.exports = async function addMachine (server,req, res, next) {
+module.exports = async function resetPassword (server,req, res, next) {
 
     // incoming: sid, machineObject
     // outgoing:  error
@@ -7,31 +7,31 @@ module.exports = async function addMachine (server,req, res, next) {
 
 
   const {username} = req.body;
-      let error = '';
-
-  
-      try {
-      const result = await dbm.users.findOne({name:username});
-      
-      console.log(result);
-      if(!result){
-        res.status(200).json({ error: "No user found" });
-        return;
-      }
-  
-      const update = await dbm.users.updateOne({_id: result._id}, {$set:{
-        password  
-      }});
+  let error = '';
 
 
-      const insert1 = await dbm.passResets.insertOne({user : result._id});
+  try {
+  const result = await dbm.users.findOne({name:username});
   
-      }
-      catch (e) {
-          error = e.toString();
-      }
-  
-      let ret = {error:error};
-      res.status(200).json(ret);
+  console.log(result);
+  if(!result){
+    res.status(200).json({ error: "No user found" });
+    return;
+  }
+
+  const update = await dbm.users.updateOne({_id: result._id}, {$set:{
+    password  
+  }});
+
+
+  const insert1 = await dbm.passResets.insertOne({user : result._id});
+
+  }
+  catch (e) {
+      error = e.toString();
+  }
+
+  let ret = {error:error};
+  res.status(200).json(ret);
   
   }
