@@ -290,3 +290,19 @@ class Service
   error: ""
 }
 ```
+
+## /verifyEmail
+```
+{
+  email: "string",
+  code: "string"
+}
+```
+
+### Response
+```
+{
+  error: "string",
+  verified: boolean
+}
+```
