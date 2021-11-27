@@ -45,8 +45,7 @@ module.exports = async function getRequiredMachines(server, req, res, next) {
     competition = await dbm.competitions.findOne({ joinCode: body.joinCode });
   }
   else {
-    res.status(400).json({ error: "Neither a sid or joinCode were provided" });
-    return;
+    competition = await dbm.competitions.findOne({});
   }
 
   if (!competition) {
