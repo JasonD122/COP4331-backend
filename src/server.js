@@ -339,7 +339,7 @@ app.post('/api/addTeam', preHandler(
     joinCode: 'string',
     teamName:'string'
   }, 
-  true,
+  false,
   API('addTeam')
 ));
 
