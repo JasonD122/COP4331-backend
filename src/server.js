@@ -268,7 +268,12 @@ app.use((req, res, next) =>
 
 app.get('/uwu', (req, res) => {
   console.log('uwu');
-  res.send(`<p>type: "${req.device.type}"</p><p>name: "${req.device.name}"</p>`);
+  console.log(req.headers);
+  res.send(`
+    <p>type: "${req.device.type}"</p>
+    <p>name: "${req.device.name}"</p>
+    <p>host: "${req.headers.host}"</p>
+    `);
   // dbm.users.deleteMany({});
   // dbm.sessions.deleteMany({});
   // dbm.teams.deleteMany({});
