@@ -7,6 +7,8 @@ class DBManager {
     this.sessions = null;
     this.competitions = null;
     this.teams = null;
+    this.emailVerif = null;
+    this.passResets = null;
   }
 
   initMongoDB(url) {
@@ -18,6 +20,8 @@ class DBManager {
     this.users = this.db.collection('Users');
     this.competitions = this.db.collection('Competition');
     this.teams = this.db.collection('Teams');
+    this.emailVerif = this.db.collection('EmailVerifications');
+    this.passResets = this.db.collection('PasswordResets');
 
     return this.db;
   }

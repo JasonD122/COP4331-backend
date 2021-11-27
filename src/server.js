@@ -368,6 +368,12 @@ app.post('/api/getRequiredMachines', preHandler(
   API('getRequiredMachines'),
 ))
 
+app.post('/api/verifyEmail', preHandler(
+  { email: 'string', code: 'string' },
+  false,
+  API('verifyEmail')
+));
+
 // Basic server stuff
 app.listen(PORT, () => 
 {

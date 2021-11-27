@@ -7,14 +7,19 @@ module.exports = async function register(server, req, res, next) {
     return;
   }
 
-  await dbm.users.insertOne({
+  const result = await dbm.users.insertOne({
     email, 
     password, 
     type: 'admin', 
     inst: null,
-    verifyCode: null,
-    isVerified: true
+    isVerified: false
   });
+
+  await dbm.emailVerif.insertOne({
+    user: result.insertedId,
+    code: server.verify.makeid(8)
+  });
+
   res.status(200).json({error: ""});
   return;
 }
