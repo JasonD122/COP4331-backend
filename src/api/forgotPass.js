@@ -6,32 +6,30 @@ module.exports = async function resetPassword (server,req, res, next) {
   const password = server.verify.makeid(8);
 
 
-  const {username} = req.body;
+  const {email} = req.body;
   let error = '';
 
 
   try {
-  const result = await dbm.users.findOne({name:username});
-  
-  console.log(result);
-  if(!result){
-    res.status(200).json({ error: "No user found" });
-    return;
-  }
+    const result = await dbm.users.findOne({ email });
+    
+    if(!result){
+      res.status(200).json({ error: "No user found" });
+      return;
+    }
 
-  const update = await dbm.users.updateOne({_id: result._id}, {$set:{
-    password  
-  }});
+    await dbm.users.updateOne(
+      { _id: result._id }, 
+      { $set: { password } },
+    );
 
-
-  const insert1 = await dbm.passResets.insertOne({user : result._id});
-
+    await dbm.passResets.insertOne({ user : result._id });
   }
   catch (e) {
-      error = e.toString();
+    error = e.toString();
   }
 
-  let ret = {error:error};
+  let ret = { error:error };
   res.status(200).json(ret);
   
   }
