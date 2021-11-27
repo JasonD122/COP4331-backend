@@ -272,7 +272,7 @@ app.get('/uwu', (req, res) => {
   res.send(`
     <p>type: "${req.device.type}"</p>
     <p>name: "${req.device.name}"</p>
-    <p>host: "${req.headers.host}"</p>
+    <p>host: "${req.hostname}"</p>
     `);
   // dbm.users.deleteMany({});
   // dbm.sessions.deleteMany({});
