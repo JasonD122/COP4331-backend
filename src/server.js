@@ -333,11 +333,9 @@ app.post('/api/deleteCompetition', preHandler(
 
 app.post('/api/addTeam', preHandler(
   {
-    email: 'email', 
-    password: 'string', 
     name: 'string', 
+    password: 'string', 
     joinCode: 'string',
-    teamName:'string'
   }, 
   false,
   API('addTeam')

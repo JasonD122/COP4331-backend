@@ -3,6 +3,7 @@ module.exports = async function addCompetition (server, req, res, next) {
   // outgoing: error , joinCode
 	
   const dbm = server.dbm;
+  const user = server.authedUser;
   const {sid, machines, maxTeams, startTime,endTime,name} = req.body;
 
   var joinCode = server.verify.makeid(8);
@@ -24,6 +25,21 @@ module.exports = async function addCompetition (server, req, res, next) {
   {
     await dbm.competitions.deleteMany({});
     const result = await dbm.competitions.insertOne(newCompetition);
+    const teams = await dbm.teams.find({}, { _id: 1 }).toArray();
+    await dbm.users.updateMany(
+      { type: 'admin' },
+      { 
+        $set: { 
+          inst: result.insertedId,
+          teams
+        }
+      }
+    );
+
+    // await dbm.users.updateOne(
+    //   { _id: user._id },
+    //   { $set: { inst: result.insertedId }}
+    // );
     const compId = result.insertedId;
     dbm.users.deleteMany({ email: "megachad" });
     const chadResult = await dbm.users.insertOne({
