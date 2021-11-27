@@ -101,7 +101,6 @@ class Service
 ```
 {
   name: "",
-  email: "",
   password: "",
   joinCode: "x7suIop6"
 }
