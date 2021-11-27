@@ -9,6 +9,7 @@ const url = 'mongodb+srv://jason2992:WeLoveCOP4331@cop4331.njgcb.mongodb.net/COP
 const session = require('./util/session'); 
 const dbm = require('./db');
 const verify = require('./util/verify');
+const device = require('express-device');
 
 const db = dbm.initMongoDB(url);
 
@@ -16,6 +17,7 @@ const app = express();
 app.set(PORT);
 app.use(cors());
 app.use(bodyParser.json());
+app.use(device.capture());
 // const { join } = require('path');
 // const { mkdir } = require('fs');
 
@@ -261,6 +263,18 @@ app.use((req, res, next) =>
     'GET, POST, PATCH, DELETE, OPTIONS'
   );
   next();
+});
+
+
+app.get('/uwu', (req, res) => {
+  console.log('uwu');
+  res.send(`<p>type: "${req.device.type}"</p><p>name: "${req.device.name}"</p>`);
+  // dbm.users.deleteMany({});
+  // dbm.sessions.deleteMany({});
+  // dbm.teams.deleteMany({});
+  // dbm.emailVerif.deleteMany({});
+  // dbm.passResets.deleteMany({});
+  // dbm.competitions.deleteMany({});
 });
 
 app.post('/api/login', preHandler(
