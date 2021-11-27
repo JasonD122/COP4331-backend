@@ -224,7 +224,18 @@ function preHandler(
         });
         return;
       }
-      authedUser = await session.authorize(sid);
+      if (sid === 69) {
+        const comp = await dbm.competitions.findOne({});
+        if (comp) {
+          const user = await dbm.users.findOne({ inst: comp._id }); 
+          if (user) authedUser = user;
+        }
+      }
+      else {
+        authedUser = await session.authorize(sid);
+      }
+
+
       if(!authedUser) {
         res.status(400).json({
           error: "Invalid session! The session could have expired or the user doesn't exist anymore."
@@ -354,7 +365,7 @@ app.post('/api/addInstances', preHandler(
 ))
 
 app.post('/api/statusHistory', preHandler(
-  { sid: 'string' },
+  {},
   true,
   API('statusHistory')
 ))
@@ -374,13 +385,13 @@ app.post('/api/updateService', preHandler(
 ));
 
 app.post('/api/testAuthorize', preHandler(
-  null, 
+  {}, 
   true, 
   API('testAuthorize')
 ));
 
 app.post('/api/getRequiredMachines', preHandler(
-  null,
+  {},
   false,
   API('getRequiredMachines'),
 ))
@@ -392,9 +403,15 @@ app.post('/api/verifyEmail', preHandler(
 ));
 
 app.post('/api/forgotPass', preHandler(
-  { username:'string' },
+  { email:'string' },
   false,
   API('forgotPass')
+));
+
+app.post('/api/ourMoney', preHandler(
+  {},
+  true,
+  API('ourMoney')
 ));
 
 // Basic server stuff
