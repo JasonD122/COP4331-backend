@@ -28,7 +28,6 @@ class Service
 - /getRequiredMachines
 - /statusHistory
 - /updateService
-- /verifyEmail
 - /ourMoney
 
 
