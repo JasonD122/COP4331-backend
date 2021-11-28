@@ -182,6 +182,7 @@ class Service
 {
   joinCode: ""
   // or sid. If sid is found, it's used. Otherwise, you can use the joinCode
+  // If no fields are passed, then the first competition is used
   sid: ""
 }
 ```
