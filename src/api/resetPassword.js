@@ -11,19 +11,21 @@ module.exports = async function resetPassword (server,req, res, next) {
 
 
   try {
-    const result = await dbm.users.findOne({ email });
+    const user = await dbm.users.findOne({ email });
     
-    if(!result){
+    if(!user){
       res.status(200).json({ error: "No user found" });
       return;
     }
 
+    server.session.clearUserSessions(user._id);
+
     await dbm.users.updateOne(
-      { _id: result._id }, 
+      { _id: user._id }, 
       { $set: { password } },
     );
 
-    await dbm.passResets.insertOne({ user : result._id });
+    await dbm.passResets.insertOne({ user : user._id });
   }
   catch (e) {
     error = e.toString();
