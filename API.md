@@ -19,7 +19,7 @@ class Service
 - /verifyEmail
 - /login
 - /logout
-- /forgotPassword
+- /resetPassword
 - /changePassword
 - /addCompetition
 - /deleteCompetition
