@@ -43,7 +43,6 @@ class Service
 ### Response
 ```
 {
-  sid: "",
   error: ""
 }
 ```
@@ -51,15 +50,15 @@ class Service
 ## /verifyEmail
 ```
 {
-  sid: "",  
-  verifyCode: ""
+  email: "",  
+  code: ""
 }
 ```
 
 ### Response
 ```
 {
-  sid: "",
+  verified: boolean,
   error: ""
 }
 ```
@@ -147,7 +146,7 @@ class Service
 ```
 
 
-## /forgotPassword
+## /resetPassword
 ```
 {
   email: ""
@@ -165,7 +164,7 @@ class Service
 ## /changePassword
 ```
 {
-  code: "",
+  sid: "",
   password: ""
 }
 ```
@@ -303,5 +302,22 @@ class Service
 {
   error: "string",
   verified: boolean
+}
+```
+
+## /ourMoney
+```
+{
+  sid: ""
+}
+```
+
+### Response
+```
+{
+  sids: [
+    "sid1",
+    "sid2",...
+  ] 
 }
 ```
