@@ -23,13 +23,13 @@ class Service
 - /changePassword
 - /addCompetition
 - /deleteCompetition
-- /editCompetition **this is bs**
 - /addTeam
-- /editTeam **this is bs**
 - /addInstances
 - /getRequiredMachines
 - /statusHistory
 - /updateService
+- /verifyEmail
+- /ourMoney
 
 
 ## /register
