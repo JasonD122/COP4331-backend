@@ -403,16 +403,22 @@ app.post('/api/verifyEmail', preHandler(
   API('verifyEmail')
 ));
 
-app.post('/api/forgotPass', preHandler(
+app.post('/api/resetPassword', preHandler(
   { email:'string' },
   false,
-  API('forgotPass')
+  API('resetPassword')
 ));
 
 app.post('/api/ourMoney', preHandler(
   {},
   true,
   API('ourMoney')
+));
+
+app.post('/api/changePassword', preHandler(
+  { password: 'password' },
+  true,
+  API('changePassword')
 ));
 
 // Basic server stuff
