@@ -10,6 +10,7 @@ module.exports = function addInstances (server, req, res, next) {
   //User much be from a team
   const user = server.authedUser;
 
+
   for (const inst of instances) {
     for (const service of inst.services) {
       service.status = false;

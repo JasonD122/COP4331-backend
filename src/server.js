@@ -355,7 +355,7 @@ app.post('/api/addTeam', preHandler(
 
 app.post('/api/addInstances', preHandler(
   {
-    machines: [{
+    instances: [{
       name: 'string',
       ip: 'string'
     }]
