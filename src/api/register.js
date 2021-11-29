@@ -2,8 +2,9 @@ module.exports = async function register(server, req, res, next) {
   const dbm = server.dbm;
   const {email, password} = req.body;
 
-  if (await dbm.doesUserExist(email)) {
-    res.status(200).json({error: "The user already exists"});
+  const existingUser = await dbm.users.find({ email }).toArray();
+  if (existingUser.length > 0) {
+    res.status(200).json({ error: "User already exists" });
     return;
   }
 
