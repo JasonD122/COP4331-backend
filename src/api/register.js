@@ -16,11 +16,13 @@ module.exports = async function register(server, req, res, next) {
     }
   }
 
+  const comp = await dbm.competitions.findOne({});
+
   const result = await dbm.users.insertOne({
     email, 
     password, 
     type: 'admin', 
-    inst: null,
+    inst: comp._id,
     isVerified: false
   });
 
