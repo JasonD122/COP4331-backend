@@ -5,7 +5,8 @@ module.exports = async function register(server, req, res, next) {
   const existingUsers = await dbm.users.find({ email }).toArray();
   console.log(existingUsers);
   if (existingUsers.length > 0) {
-    if (existingUsers.isVerified) {
+    // Should catch it when trying to register more than one
+    if (existingUsers[0].isVerified) {
       res.status(200).json({ error: "User already exists" });
       return;
     }
