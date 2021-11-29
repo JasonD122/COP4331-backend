@@ -23,7 +23,7 @@ module.exports = async function register(server, req, res, next) {
     email, 
     password, 
     type: 'admin', 
-    inst: comp._id,
+    inst: comp._id || null,
     isVerified: false
   });
 
