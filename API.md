@@ -19,17 +19,16 @@ class Service
 - /verifyEmail
 - /login
 - /logout
-- /forgotPassword
+- /resetPassword
 - /changePassword
 - /addCompetition
 - /deleteCompetition
-- /editCompetition **this is bs**
 - /addTeam
-- /editTeam **this is bs**
 - /addInstances
 - /getRequiredMachines
 - /statusHistory
 - /updateService
+- /ourMoney
 
 
 ## /register
@@ -182,6 +181,7 @@ class Service
 {
   joinCode: ""
   // or sid. If sid is found, it's used. Otherwise, you can use the joinCode
+  // If no fields are passed, then the first competition is used
   sid: ""
 }
 ```
