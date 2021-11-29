@@ -9,17 +9,20 @@ module.exports = async function addInstances (server, req, res, next) {
   //User much be from a team
   const user = server.authedUser;
   const reqMachines = (await dbm.competitions.findOne({})).machines;
-  const existingMachines = (await dbm.teams.findOne({ _id: user.inst })).instances;
+  let existingMachines = (await dbm.teams.findOne({ _id: user.inst }))
+    .instances || [];
 
-  if (reqMachines.length != instances.length) {
-    res.status(400).json({ error: "Num required machines doesn't match num instances passed" });
-    return;
-  }
+  console.log(existingMachines);
 
   let reqMachinesMap = {};
+  let machinesMap = new Map();
 
   for (const m of reqMachines) {
     reqMachinesMap[m.name] = m; 
+  }
+
+  for (const m of existingMachines) {
+    machinesMap.set(m.name, m);
   }
 
   for (const inst of instances) {
@@ -42,13 +45,17 @@ module.exports = async function addInstances (server, req, res, next) {
       });
     }
 
-    createdInsts.push({
+    machinesMap.set(inst.name, {
       name: inst.name,
       ip: inst.ip,
       services: createdSrvs,
     });
   }
 
+  await dbm.teams.updateOne(
+    { _id: user.inst },
+    { $set: { instances: [...machinesMap.values()] } }
+  );
 
   res.status(200).json({ error: "" });
 }
