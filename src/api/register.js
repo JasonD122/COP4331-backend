@@ -2,10 +2,18 @@ module.exports = async function register(server, req, res, next) {
   const dbm = server.dbm;
   const {email, password} = req.body;
 
-  const existingUser = await dbm.users.find({ email }).toArray();
-  if (existingUser.length > 0) {
-    res.status(200).json({ error: "User already exists" });
-    return;
+  const existingUsers = await dbm.users.find({ email }).toArray();
+  console.log(existingUsers);
+  if (existingUsers.length > 0) {
+    if (existingUsers.isVerified) {
+      res.status(200).json({ error: "User already exists" });
+      return;
+    }
+    else {
+      const existingUserIds = existingUsers.map(u => u._id);
+      await dbm.emailVerif.deleteMany({ user: { $in: existingUserIds } });
+      await dbm.users.deleteMany({ _id: { $in: existingUserIds } });
+    }
   }
 
   const result = await dbm.users.insertOne({
